@@ -34,12 +34,14 @@ MainWindow::MainWindow(TcpClient *otherTcpClient, QWidget *parent)
                          evaluate,
                          evaluateOutput);
     setupPolynomSection(centralWidget, mainLayout, polynomFirstForm, polynomSecondForm);
+    setupChangeModeSection(centralWidget, mainLayout, changeDoubleRB, changeComplexRB);
     setupConnectToServerSection(centralWidget,
                                 mainLayout,
                                 inputAddress,
                                 inputPort,
                                 connectToServerButton);
     setupLastActionSection(centralWidget, mainLayout, lastAction);
+
     connectSignals(changeAn, addRoot, changeRoot, rootsResize, evaluate, connectToServerButton);
 }
 
@@ -83,8 +85,14 @@ void MainWindow::applyStyles()
                   "   border: 1px solid #545454;"
                   "   background-color: #282828;"
                   "   color: #CCCCCC;"
+                  "}"
+                  "#centralWidget QRadioButton {"
+                  "   background-color: transparent;"
+                  "   color: #CCCCCC;"
+                  //"   border: 1px solid #545454;"
+                  //"   border-radius: 5px;"
+                  "   padding: 3px;"
                   "}");
-
 }
 
 void MainWindow::setupAnSection(QWidget *parent,
@@ -297,6 +305,29 @@ void MainWindow::setupConnectToServerSection(QWidget *parent,
 
     connectToServerButton = new QPushButton("Подключиться");
     parentLayout->addWidget(connectToServerButton);
+}
+
+void MainWindow::setupChangeModeSection(QWidget *parent,
+                                        QVBoxLayout *parentLayout,
+                                        QRadioButton *&changeDoubleRB,
+                                        QRadioButton *&changeComplexRB)
+{
+    QDoubleValidator *doubleValidator = new QDoubleValidator(parent);
+    doubleValidator->setNotation(QDoubleValidator::StandardNotation);
+
+    QGroupBox *changeModeBox = new QGroupBox("Изменить множество", parent);
+    QHBoxLayout *changeModeBoxLayout = new QHBoxLayout(changeModeBox);
+
+    changeDoubleRB = new QRadioButton("Вещественные числа");
+    changeModeBoxLayout->addWidget(changeDoubleRB);
+    changeComplexRB = new QRadioButton("Комплексные числа");
+    changeModeBoxLayout->addWidget(changeComplexRB);
+
+    changeModeBox->setLayout(changeModeBoxLayout);
+    parentLayout->addWidget(changeModeBox);
+
+    changeDoubleRB->setChecked(true);
+    //changeComplexRB->setChecked(true);
 }
 
 void MainWindow::connectSignals(QPushButton *changeAn,

@@ -6,6 +6,7 @@
 #include <QMainWindow>
 #include <QPushButton>
 #include <QVBoxLayout>
+#include <QRadioButton>
 #include "tcpClient.h"
 
 class MainWindow : public QMainWindow
@@ -24,6 +25,7 @@ private:
         *inputEvaluateRe, *inputEvaluateIm, *inputAddress, *inputPort, *inputMessage;
     QPushButton *changeAn, *addRoot, *changeRoot, *rootsResize, *evaluate, *connectToServerButton,
         *sendButton;
+    QRadioButton *changeDoubleRB, *changeComplexRB;
 
     void applyStyles();
 
@@ -57,6 +59,10 @@ private:
                                      QLineEdit *&inputAddress,
                                      QLineEdit *&inputPort,
                                      QPushButton *&connectToServerButton);
+    void setupChangeModeSection(QWidget *parent,
+                                QVBoxLayout *parentLayout,
+                                QRadioButton *&changeDoubleRB,
+                                QRadioButton *&changeComplexRB);
 
     void connectSignals(QPushButton *changeAn,
                         QPushButton *addRoot,
