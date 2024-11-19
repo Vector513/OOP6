@@ -9,7 +9,7 @@ MainWindow::MainWindow(TcpClient *otherTcpClient, QWidget *parent)
 {
     setWindowTitle("Polynomial");
     setMinimumSize(400, 300);
-    resize(600, 700);
+    resize(600, 800);
     QWidget *centralWidget = new QWidget(this);
     setCentralWidget(centralWidget);
     QVBoxLayout *mainLayout = new QVBoxLayout(centralWidget);
@@ -42,7 +42,7 @@ MainWindow::MainWindow(TcpClient *otherTcpClient, QWidget *parent)
                                 connectToServerButton);
     setupLastActionSection(centralWidget, mainLayout, lastAction);
 
-    connectSignals(changeAn, addRoot, changeRoot, rootsResize, evaluate, connectToServerButton);
+    connectSignals(changeAn, addRoot, changeRoot, rootsResize, evaluate, connectToServerButton, changeDoubleRB, changeComplexRB);
 }
 
 MainWindow::~MainWindow() {}
@@ -335,7 +335,10 @@ void MainWindow::connectSignals(QPushButton *changeAn,
                                 QPushButton *changeRoot,
                                 QPushButton *rootsResize,
                                 QPushButton *evaluate,
-                                QPushButton *connectToServerButton)
+                                QPushButton *connectToServerButton,
+                                QRadioButton *changeDoubleRB,
+                                QRadioButton *changeComplexRB
+                                )
 {
     connect(changeAn, &QPushButton::clicked, this, &MainWindow::onChangeAnClicked);
     connect(addRoot, &QPushButton::clicked, this, &MainWindow::onAddRootClicked);
@@ -346,6 +349,8 @@ void MainWindow::connectSignals(QPushButton *changeAn,
             &QPushButton::clicked,
             this,
             &MainWindow::onChangeConnectionToServerClicked);
+    connect(changeDoubleRB, &QRadioButton::clicked, this, &MainWindow::onChangeDoubleRBClicked);
+    connect(changeComplexRB, &QRadioButton::clicked, this, &MainWindow::onChangeComplexRBClicked);
     connect(tcpClient, &TcpClient::messageReceived, this, &MainWindow::onMessageReceived);
 }
 
@@ -400,6 +405,22 @@ void MainWindow::onChangeConnectionToServerClicked()
         lastAction->setText("Отключён от сервера");
         connectToServerButton->setText("Подключиться");
     }
+}
+
+void MainWindow::onChangeDoubleRBClicked()
+{
+    //if (changeDoubleRB->isEnabled()) lastAction->setText("Текущее множество уже вещественное");
+    //else
+        lastAction->setText("Отправлен запрос на изменение множества на вещественное");
+    tcpClient->sendData("changeDouble");
+}
+
+void MainWindow::onChangeComplexRBClicked()
+{
+    //if (changeComplexRB->isEnabled()) lastAction->setText("Текущее множество уже комплексное");
+    //else
+        lastAction->setText("Отправлен запрос на изменение множества на вещественное");
+    tcpClient->sendData("changeComplex");
 }
 
 void MainWindow::onMessageReceived(const QString &response)

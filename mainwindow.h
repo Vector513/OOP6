@@ -69,7 +69,9 @@ private:
                         QPushButton *changeRoot,
                         QPushButton *rootsResize,
                         QPushButton *evaluate,
-                        QPushButton *connectToServerButton);
+                        QPushButton *connectToServerButton,
+                        QRadioButton *changeDoubleRB,
+                        QRadioButton *changeComplexRB);
 
 private slots:
     void onChangeAnClicked();
@@ -78,6 +80,8 @@ private slots:
     void onRootsResizeClicked();
     void onEvaluateClicked();
     void onChangeConnectionToServerClicked();
+    void onChangeDoubleRBClicked();
+    void onChangeComplexRBClicked();
     void onMessageReceived(const QString &response);
 };
 
