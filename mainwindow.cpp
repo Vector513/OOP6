@@ -327,7 +327,6 @@ void MainWindow::setupChangeModeSection(QWidget *parent,
     parentLayout->addWidget(changeModeBox);
 
     changeDoubleRB->setChecked(true);
-    //changeComplexRB->setChecked(true);
 }
 
 void MainWindow::connectSignals(QPushButton *changeAn,
@@ -345,12 +344,9 @@ void MainWindow::connectSignals(QPushButton *changeAn,
     connect(changeRoot, &QPushButton::clicked, this, &MainWindow::onChangeRootClicked);
     connect(rootsResize, &QPushButton::clicked, this, &MainWindow::onRootsResizeClicked);
     connect(evaluate, &QPushButton::clicked, this, &MainWindow::onEvaluateClicked);
-    connect(connectToServerButton,
-            &QPushButton::clicked,
-            this,
-            &MainWindow::onChangeConnectionToServerClicked);
-    connect(changeDoubleRB, &QRadioButton::clicked, this, &MainWindow::onChangeDoubleRBClicked);
-    connect(changeComplexRB, &QRadioButton::clicked, this, &MainWindow::onChangeComplexRBClicked);
+    connect(changeDoubleRB, &QRadioButton::toggled, this, &MainWindow::onChangeDoubleRBClicked);
+    connect(changeComplexRB, &QRadioButton::toggled, this, &MainWindow::onChangeComplexRBClicked);
+    connect(connectToServerButton, &QPushButton::clicked, this, &MainWindow::onChangeConnectionToServerClicked);
     connect(tcpClient, &TcpClient::messageReceived, this, &MainWindow::onMessageReceived);
 }
 
@@ -409,18 +405,18 @@ void MainWindow::onChangeConnectionToServerClicked()
 
 void MainWindow::onChangeDoubleRBClicked()
 {
-    //if (changeDoubleRB->isEnabled()) lastAction->setText("Текущее множество уже вещественное");
-    //else
-        lastAction->setText("Отправлен запрос на изменение множества на вещественное");
-    tcpClient->sendData("changeDouble");
+    if (changeDoubleRB->isChecked()) {
+        lastAction->setText("Отправлен запрос на изменение множества чисел на вещественное");
+        tcpClient->sendData("changeDouble");
+    }
 }
 
 void MainWindow::onChangeComplexRBClicked()
 {
-    //if (changeComplexRB->isEnabled()) lastAction->setText("Текущее множество уже комплексное");
-    //else
-        lastAction->setText("Отправлен запрос на изменение множества на вещественное");
-    tcpClient->sendData("changeComplex");
+    if (changeComplexRB->isChecked()) {
+        lastAction->setText("Отправлен запрос на изменение множества чисел на комплексное");
+        tcpClient->sendData("changeComplex");
+    }
 }
 
 void MainWindow::onMessageReceived(const QString &response)
@@ -429,22 +425,37 @@ void MainWindow::onMessageReceived(const QString &response)
         lastAction->setText("Получен результат изменения An");
         polynomFirstForm->setText(response.section('\n', 0, 0));
         polynomSecondForm->setText(response.section('\n', 1, 1));
-    } else if (lastAction->text() == "Отправлен запрос на добавление корня") {
+    }
+    else if (lastAction->text() == "Отправлен запрос на добавление корня") {
         lastAction->setText("Получен результат добавления корня");
         polynomFirstForm->setText(response.section('\n', 0, 0));
         polynomSecondForm->setText(response.section('\n', 1, 1));
-    } else if (lastAction->text() == "Отправлен запрос на изменение корня по индексу") {
+    }
+    else if (lastAction->text() == "Отправлен запрос на изменение корня по индексу") {
         lastAction->setText("Получен результат изменения корня");
         polynomFirstForm->setText(response.section('\n', 0, 0));
         polynomSecondForm->setText(response.section('\n', 1, 1));
-    } else if (lastAction->text() == "Отправлен запрос на изменение размера массива корней") {
+    }
+    else if (lastAction->text() == "Отправлен запрос на изменение размера массива корней") {
         lastAction->setText("Получен результат изменения размера массива корней");
         polynomFirstForm->setText(response.section('\n', 0, 0));
         polynomSecondForm->setText(response.section('\n', 1, 1));
-    } else if (lastAction->text() == "Отправлен запрос на вычисление в точке") {
+    }
+    else if (lastAction->text() == "Отправлен запрос на вычисление в точке") {
         lastAction->setText("Получен результат вычисления в точке");
         evaluateOutput->setText("Результат: " + response);
-    } else {
+    }
+    else if (response.startsWith("changedModeToDouble")) {
+        lastAction->setText("Множество чисел было изменено на вещественное");
+        polynomFirstForm->setText(response.section('\n', 1, 1));
+        polynomSecondForm->setText(response.section('\n', 2, 2));
+    }
+    else if (response.startsWith("changedModeToComplex")) {
+        lastAction->setText("Множество чисел было изменено на комплексное");
+        polynomFirstForm->setText(response.section('\n', 1, 1));
+        polynomSecondForm->setText(response.section('\n', 2, 2));
+    }
+    else {
         lastAction->setText("Ответ сервера: " + response);
     }
 }
